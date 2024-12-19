@@ -7,7 +7,6 @@ import jwt
 from jwt import PyJWTError
 from core.database import Session
 from .auth import oauth2_schema
-from models.user_model import UserModel
 from uuid import UUID
 
 async def get_session() -> AsyncGenerator:
@@ -17,6 +16,8 @@ async def get_session() -> AsyncGenerator:
         yield session
     finally:
         await session.close()
+
+"""
 
 async def get_current_user(db: AsyncSession = Depends(get_session), token: str = Depends(oauth2_schema)):
 
@@ -52,3 +53,5 @@ async def get_current_user(db: AsyncSession = Depends(get_session), token: str =
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
         
         return usuario
+
+"""
