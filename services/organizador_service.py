@@ -11,7 +11,6 @@ from models.organizador_model import Organizador
 
 async def create_organizador(organizador: OrganizadorBaseSchema, db: AsyncSession):
     novo_organizador: Organizador = Organizador(nome=organizador.nome, email=organizador.email, telefone=organizador.telefone)
-    print(novo_organizador)
     async with db as session:
         try:
             session.add(novo_organizador)
