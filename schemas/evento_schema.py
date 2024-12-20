@@ -1,12 +1,12 @@
-from typing import Optional, List, TYPE_CHECKING
-from pydantic import BaseModel
+from typing import Optional, List
+from pydantic import BaseModel, EmailStr
 from uuid import UUID
 from datetime import datetime
 
 
 class ParticipanteBaseSchema(BaseModel):
     nome: str
-    email: str
+    email: EmailStr
     telefone: str
 
 class EventoBaseSchema(BaseModel):

@@ -1,14 +1,14 @@
 from typing import Optional, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from uuid import UUID
 from datetime import datetime
 
-from .evento_schema import EventoBaseSchema, EventoResponseSchema
+from .evento_schema import EventoResponseSchema
 
 class OrganizadorBaseSchema(BaseModel):
     nome: str
-    email: str
+    email: EmailStr
     telefone: str
 
 class OrganizadorSchema(OrganizadorBaseSchema):
@@ -20,7 +20,7 @@ class OrganizadorSchema(OrganizadorBaseSchema):
 
 class OrganizadorUpdateSchema(OrganizadorBaseSchema):
     nome: Optional[str] = None
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
     telefone: Optional[str] = None
 
 class OrganizadorEventoSchema(OrganizadorBaseSchema):
