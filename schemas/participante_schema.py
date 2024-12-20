@@ -1,10 +1,16 @@
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
 
-from .evento_schema import EventoResponseSchema
+
+class EventoBaseSchema(BaseModel):
+    nome: str
+    descricao: str
+    data_inicio: datetime
+    capacidade: int
+    organizador_id: UUID
 
 class ParticipanteBaseSchema(BaseModel):
     nome: str
@@ -24,4 +30,9 @@ class ParticipanteUpdateSchema(ParticipanteBaseSchema):
     telefone: Optional[str] = None
 
 class ParticipanteEventosSchema(ParticipanteSchema):
-    eventos: List[EventoResponseSchema]
+    eventos: List[EventoBaseSchema]
+
+    class Config:
+        from_attributes = True
+
+ParticipanteEventosSchema.model_rebuild()
