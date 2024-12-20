@@ -1,8 +1,10 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
+
+from .evento_schema import EventoBaseSchema, EventoResponseSchema
 
 class OrganizadorBaseSchema(BaseModel):
     nome: str
@@ -20,3 +22,6 @@ class OrganizadorUpdateSchema(OrganizadorBaseSchema):
     nome: Optional[str] = None
     email: Optional[str] = None
     telefone: Optional[str] = None
+
+class OrganizadorEventoSchema(OrganizadorBaseSchema):
+    eventos: List[EventoResponseSchema]
