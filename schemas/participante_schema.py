@@ -1,9 +1,9 @@
 from typing import Optional, List
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from uuid import UUID
 from datetime import datetime
-
+from utils.valida_telefone import valida_telefone
 
 class EventoBaseSchema(BaseModel):
     nome: str
@@ -17,6 +17,10 @@ class ParticipanteBaseSchema(BaseModel):
     email: EmailStr
     telefone: str
 
+    @field_validator("telefone")
+    def validate_telefone(cls, v):
+        return valida_telefone(v)
+
 class ParticipanteSchema(ParticipanteBaseSchema):
     id: UUID
     criado_em: datetime
@@ -26,8 +30,12 @@ class ParticipanteSchema(ParticipanteBaseSchema):
 
 class ParticipanteUpdateSchema(ParticipanteBaseSchema):
     nome: Optional[str] = None
-    email: Optional[str] = EmailStr
+    email: Optional[EmailStr] = None
     telefone: Optional[str] = None
+
+    @field_validator("telefone")
+    def validate_telefone(cls, v):
+        return valida_telefone(v)
 
 class ParticipanteEventosSchema(ParticipanteSchema):
     eventos: List[EventoBaseSchema]
