@@ -83,4 +83,4 @@ async def login_participante(login_data: LoginSchema, db: AsyncSession):
         
         organizador_id = str(organizador.id)
 
-        return create_access_token(organizador_id)
+        return create_access_token(sub=organizador_id, data_type="Participante")

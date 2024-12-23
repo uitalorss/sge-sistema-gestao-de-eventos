@@ -14,7 +14,6 @@ from models.eventos_model import Evento
 
 async def create_evento(evento: EventoBaseSchema, db: AsyncSession):
     data_inicio = datetime.strptime(evento.data_inicio, "%d/%m/%Y")
-    print(data_inicio)
     novo_evento: Evento = Evento(nome=evento.nome, descricao=evento.descricao, data_inicio=data_inicio, capacidade=evento.capacidade, organizador_id=UUID(evento.organizador_id))
     async with db as session:
         try:

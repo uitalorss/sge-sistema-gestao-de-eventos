@@ -23,9 +23,9 @@ async def create_organizador(organizador: OrganizadorCreateSchema, db: AsyncSess
         except IntegrityError:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Dados informados são inválidos")
         
-async def get_organizador(organizador_id: str, db: AsyncSession):
+async def get_organizador(organizador_id: UUID, db: AsyncSession):
     async with db as session:
-        query = select(Organizador).filter(Organizador.id == UUID(organizador_id))
+        query = select(Organizador).filter(Organizador.id == organizador_id)
         result = await session.execute(query)
         organizador = result.scalars().unique().one_or_none()
 
@@ -34,9 +34,9 @@ async def get_organizador(organizador_id: str, db: AsyncSession):
         
         return organizador
     
-async def update_organizador(organizador_id: str, organizador: OrganizadorUpdateSchema, db: AsyncSession):
+async def update_organizador(organizador_id: UUID, organizador: OrganizadorUpdateSchema, db: AsyncSession):
     async with db as session:
-        query = select(Organizador).filter(Organizador.id == UUID(organizador_id))
+        query = select(Organizador).filter(Organizador.id == organizador_id)
         result = await session.execute(query)
         update_organizador = result.scalars().unique().one_or_none()
 
@@ -56,9 +56,9 @@ async def update_organizador(organizador_id: str, organizador: OrganizadorUpdate
 
         return update_organizador
     
-async def delete_organizador(organizador_id: str, db: AsyncSession):
+async def delete_organizador(organizador_id: UUID, db: AsyncSession):
     async with db as session:
-        query = select(Organizador).filter(Organizador.id == UUID(organizador_id))
+        query = select(Organizador).filter(Organizador.id == organizador_id)
         result = await session.execute(query)
         delete_organizador = result.scalars().unique().one_or_none()
 
@@ -85,4 +85,4 @@ async def login_organizador(login_data: LoginSchema, db: AsyncSession):
         
         organizador_id = str(organizador.id)
 
-        return create_access_token(organizador_id)
+        return create_access_token(sub=organizador_id, data_type="Organizador")
