@@ -52,6 +52,6 @@ async def get_current_user(db: AsyncSession = Depends(get_session), token: str =
         usuario: Organizador | Participante = result.scalars().unique().one_or_none()
 
         if usuario is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não Autenticado")
         
         return usuario

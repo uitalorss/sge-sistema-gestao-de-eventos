@@ -81,7 +81,7 @@ async def login_organizador(login_data: LoginSchema, db: AsyncSession):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário e/ou senha incorretos.")
         
         if not verify_password(login_data.senha, organizador.senha):
-            return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuário e/ou senha incorretos.")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuário e/ou senha incorretos.")
         
         organizador_id = str(organizador.id)
 

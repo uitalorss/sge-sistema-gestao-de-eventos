@@ -22,9 +22,9 @@ async def create_participante(participante: ParticipanteCreateSchema, db: AsyncS
         except IntegrityError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email informado já cadastrado.")
         
-async def get_participante(participante_id: str, db: AsyncSession):
+async def get_participante(participante_id: UUID, db: AsyncSession):
     async with db as session:
-        query = select(Participante).filter(Participante.id == UUID(participante_id))
+        query = select(Participante).filter(Participante.id == participante_id)
         result = await session.execute(query)
         participante = result.scalars().unique().one_or_none()
 
@@ -33,9 +33,9 @@ async def get_participante(participante_id: str, db: AsyncSession):
         
         return participante
     
-async def update_participante(participante_id: str, participante: ParticipanteUpdateSchema, db: AsyncSession):
+async def update_participante(participante_id: UUID, participante: ParticipanteUpdateSchema, db: AsyncSession):
     async with db as session:
-        query = select(Participante).filter(Participante.id == UUID(participante_id))
+        query = select(Participante).filter(Participante.id == participante_id)
         result = await session.execute(query)
         update_participante = result.scalars().unique().one_or_none()
 
@@ -55,9 +55,9 @@ async def update_participante(participante_id: str, participante: ParticipanteUp
 
         return update_participante
     
-async def delete_participante(participante_id: str, db: AsyncSession):
+async def delete_participante(participante_id: UUID, db: AsyncSession):
     async with db as session:
-        query = select(Participante).filter(Participante.id == UUID(participante_id))
+        query = select(Participante).filter(Participante.id == participante_id)
         result = await session.execute(query)
         delete_participante = result.scalars().unique().one_or_none()
 
@@ -73,14 +73,14 @@ async def login_participante(login_data: LoginSchema, db: AsyncSession):
     async with db as session:
         query = select(Participante).filter(Participante.email == login_data.email)
         result = await session.execute(query)
-        organizador = result.scalars().unique().one_or_none()
+        participante = result.scalars().unique().one_or_none()
 
-        if organizador is None:
+        if participante is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário e/ou senha incorretos.")
         
-        if not verify_password(login_data.senha, organizador.senha):
-            return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuário e/ou senha incorretos.")
+        if not verify_password(login_data.senha, participante.senha):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuário e/ou senha incorretos.")
         
-        organizador_id = str(organizador.id)
+        participante_id = str(participante.id)
 
-        return create_access_token(sub=organizador_id, data_type="Participante")
+        return create_access_token(sub=participante_id, data_type="Participante")
