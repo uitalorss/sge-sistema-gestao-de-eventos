@@ -18,8 +18,6 @@ def create_token(token_type: str, lifetime: timedelta, sub: str):
     payload["iat"] = datetime.now(tz=timezone_ba)
     payload["sub"] = str(sub)
 
-    print(payload)
-
     return jwt.encode(payload, settings.JWT_KEY, algorithm=settings.ALGORITHM)
 
 

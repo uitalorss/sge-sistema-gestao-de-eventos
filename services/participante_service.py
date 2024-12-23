@@ -69,7 +69,7 @@ async def delete_participante(participante_id: str, db: AsyncSession):
 
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     
-async def login_organizador(login_data: LoginSchema, db: AsyncSession):
+async def login_participante(login_data: LoginSchema, db: AsyncSession):
     async with db as session:
         query = select(Participante).filter(Participante.email == login_data.email)
         result = await session.execute(query)
