@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status, Response
 
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -9,9 +9,16 @@ from uuid import UUID
 
 from schemas.inscricao_schema import InscricaoBaseSchema, InscricaoSchema
 from models.participante_evento_model import ParticipanteEvento
+from services.evento_service import get_evento
+
 
 async def create_inscricao(evento: InscricaoBaseSchema, participante_id: UUID, db: AsyncSession):
     async with db as session:
+        evento_exists = await get_evento(evento_id=evento.evento_id, db=db)
+        
+        if len(evento_exists.participantes) == evento_exists.capacidade:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Evento com capacidade esgotada.") 
+
         query = select(ParticipanteEvento).filter(and_(ParticipanteEvento.evento_id == evento.evento_id, ParticipanteEvento.participante_id == participante_id))
         result = await session.execute(query)
         is_available_inscricao = result.scalars().unique().one_or_none()
