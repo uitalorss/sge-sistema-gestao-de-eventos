@@ -22,7 +22,6 @@ async def post_inscricao(evento: InscricaoBaseSchema, db: AsyncSession = Depends
 
 @router.get("/", response_model=ParticipanteEventosSchema, status_code=status.HTTP_200_OK)
 async def get(db: AsyncSession = Depends(get_session), usuario_logado: Participante = Depends(get_current_user)):
-    print(usuario_logado.id)
     return await get_participante(participante_id=usuario_logado.id, db=db)
 
 @router.put("/", response_model=ParticipanteSchema, status_code=status.HTTP_202_ACCEPTED)

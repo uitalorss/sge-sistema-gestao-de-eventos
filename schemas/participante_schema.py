@@ -45,5 +45,3 @@ class ParticipanteEventosSchema(ParticipanteSchema):
 
     class Config:
         from_attributes = True
-
-ParticipanteEventosSchema.model_rebuild()

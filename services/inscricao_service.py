@@ -7,7 +7,7 @@ from sqlalchemy.future import select
 
 from uuid import UUID
 
-from schemas.inscricao_schema import InscricaoBaseSchema, InscricaoSchema
+from schemas.inscricao_schema import InscricaoBaseSchema
 from models.participante_evento_model import ParticipanteEvento
 from services.evento_service import get_evento
 

@@ -30,7 +30,7 @@ class EventoUpdateSchema(BaseModel):
     data_inicio: Optional[datetime] = None
     capacidade: Optional[int] = None
     
-class EventoResponseSchema(BaseModel):
+class EventoResponseSchemaCompleto(BaseModel):
     id: int
     nome: str
     descricao: str
@@ -44,4 +44,9 @@ class EventoResponseSchema(BaseModel):
     class Config:
         from_attributes = True
 
-EventoResponseSchema.model_rebuild()
+class EventoResponseSchema(EventoBaseSchema):
+    data_inicio: datetime
+    organizador_id: UUID
+
+    class Config:
+        from_attributes = True

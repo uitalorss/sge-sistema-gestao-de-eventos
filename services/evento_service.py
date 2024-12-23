@@ -8,7 +8,7 @@ from datetime import datetime
 
 from uuid import UUID
 
-from schemas.evento_schema import EventoBaseSchema, EventoSchema, EventoUpdateSchema
+from schemas.evento_schema import EventoBaseSchema, EventoUpdateSchema, EventoResponseSchema
 
 from models.eventos_model import Evento
 
@@ -23,6 +23,12 @@ async def create_evento(evento: EventoBaseSchema, db: AsyncSession):
             return novo_evento
         except IntegrityError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Favor verificar dados.")
+
+async def get_todos_eventos(db: AsyncSession):
+    async with db as session:
+        result = await session.execute(select(Evento))
+        eventos = result.unique().scalars().all()
+        return [EventoResponseSchema.model_validate(evento) for evento in eventos]
 
 async def get_evento(evento_id: int, db: AsyncSession):
     async with db as session:
