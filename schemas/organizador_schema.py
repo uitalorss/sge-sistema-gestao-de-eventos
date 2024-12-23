@@ -15,6 +15,10 @@ class OrganizadorBaseSchema(BaseModel):
     @field_validator("telefone")
     def validate_telefone(cls, v):
         return valida_telefone(v)
+    
+class OrganizadorCreateSchema(OrganizadorBaseSchema):
+    senha: str
+
 
 class OrganizadorSchema(OrganizadorBaseSchema):
     id: UUID

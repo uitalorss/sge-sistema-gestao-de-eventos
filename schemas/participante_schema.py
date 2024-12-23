@@ -21,6 +21,9 @@ class ParticipanteBaseSchema(BaseModel):
     def validate_telefone(cls, v):
         return valida_telefone(v)
 
+class ParticipanteCreateSchema(ParticipanteBaseSchema):
+    senha: str
+
 class ParticipanteSchema(ParticipanteBaseSchema):
     id: UUID
     criado_em: datetime

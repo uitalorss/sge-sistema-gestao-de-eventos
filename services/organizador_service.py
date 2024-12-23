@@ -6,11 +6,14 @@ from sqlalchemy.exc import IntegrityError
 
 from uuid import UUID
 
-from schemas.organizador_schema import OrganizadorBaseSchema, OrganizadorSchema, OrganizadorUpdateSchema
+from core.auth.security import verify_password, generate_hashed_password
+from core.auth.auth import create_access_token
+from schemas.organizador_schema import OrganizadorBaseSchema, OrganizadorSchema, OrganizadorUpdateSchema, OrganizadorCreateSchema
+from schemas.auth_schema import LoginSchema
 from models.organizador_model import Organizador
 
-async def create_organizador(organizador: OrganizadorBaseSchema, db: AsyncSession):
-    novo_organizador: Organizador = Organizador(nome=organizador.nome, email=organizador.email, telefone=organizador.telefone)
+async def create_organizador(organizador: OrganizadorCreateSchema, db: AsyncSession):
+    novo_organizador: Organizador = Organizador(nome=organizador.nome, email=organizador.email, telefone=organizador.telefone, senha=generate_hashed_password(organizador.senha))
     async with db as session:
         try:
             session.add(novo_organizador)
@@ -68,3 +71,18 @@ async def delete_organizador(organizador_id: str, db: AsyncSession):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
+async def login_organizador(login_data: LoginSchema, db: AsyncSession):
+    async with db as session:
+        query = select(Organizador).filter(Organizador.email == login_data.email)
+        result = await session.execute(query)
+        organizador = result.scalars().unique().one_or_none()
+
+        if organizador is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário e/ou senha incorretos.")
+        
+        if not verify_password(login_data.senha, organizador.senha):
+            return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuário e/ou senha incorretos.")
+        
+        organizador_id = str(organizador.id)
+
+        return create_access_token(organizador_id)

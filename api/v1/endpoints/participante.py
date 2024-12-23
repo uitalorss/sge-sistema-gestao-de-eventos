@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.auth.deps import get_session
 
-from schemas.participante_schema import ParticipanteBaseSchema, ParticipanteUpdateSchema, ParticipanteSchema, ParticipanteEventosSchema
+from schemas.participante_schema import ParticipanteBaseSchema, ParticipanteUpdateSchema, ParticipanteSchema, ParticipanteEventosSchema, ParticipanteCreateSchema
 from schemas.inscricao_schema import InscricaoBaseSchema, InscricaoSchema
 from services.participante_service import create_participante, get_participante, update_participante, delete_participante
 from services.inscricao_service import create_inscricao, delete_inscricao
@@ -12,7 +12,7 @@ from services.inscricao_service import create_inscricao, delete_inscricao
 router = APIRouter()
 
 @router.post("/", response_model=ParticipanteSchema, status_code=status.HTTP_201_CREATED)
-async def post(participante: ParticipanteBaseSchema, db: AsyncSession = Depends(get_session)):
+async def post(participante: ParticipanteCreateSchema, db: AsyncSession = Depends(get_session)):
     return await create_participante(participante, db)
 
 @router.post("/{participante_id}/inscricao", response_model=InscricaoSchema, status_code=status.HTTP_201_CREATED)
