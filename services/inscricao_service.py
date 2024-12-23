@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status, Response
 
-from sqlalchemy import and_, func
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 

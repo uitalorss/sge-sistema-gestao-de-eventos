@@ -14,7 +14,6 @@ class EventoBaseSchema(BaseModel):
     descricao: str
     data_inicio: str
     capacidade: int
-    organizador_id: str
 
 class EventoSchema(EventoBaseSchema):
     id: int

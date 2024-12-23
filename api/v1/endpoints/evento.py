@@ -16,7 +16,7 @@ router = APIRouter()
 
 @router.post("/", response_model=EventoResponseSchema, status_code=status.HTTP_201_CREATED) # Ver response model
 async def post(evento: EventoBaseSchema, db: AsyncSession = Depends(get_session), usuario_logado: Organizador = Depends(get_current_user)):
-    return await create_evento(evento, db)
+    return await create_evento(evento=evento, db=db, organizador_id=usuario_logado.id)
 
 @router.get("/", response_model=List[EventoResponseSchema], status_code=status.HTTP_200_OK)
 async def get_eventos(db: AsyncSession = Depends(get_session)):
@@ -28,8 +28,8 @@ async def get(evento_id: int, db: AsyncSession = Depends(get_session)):
 
 @router.put("/{evento_id}", response_model=EventoResponseSchema, status_code=status.HTTP_202_ACCEPTED)
 async def put(evento_id: int, evento: EventoUpdateSchema, db: AsyncSession = Depends(get_session), usuario_logado: Organizador = Depends(get_current_user)):
-    return await update_evento(evento_id, evento, db)
+    return await update_evento(evento_id=evento_id, evento=evento, db=db, organizador_id=usuario_logado.id)
 
 @router.delete("/{evento_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete(evento_id: int, db: AsyncSession = Depends(get_session), usuario_logado: Organizador = Depends(get_current_user)):
-    return await delete_evento(evento_id, db)
+    return await delete_evento(evento_id=evento_id, db=db, organizador_id=usuario_logado.id)

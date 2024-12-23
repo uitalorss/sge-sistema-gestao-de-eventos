@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status, Response
 
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.exc import IntegrityError
@@ -12,9 +13,9 @@ from schemas.evento_schema import EventoBaseSchema, EventoUpdateSchema, EventoRe
 
 from models.eventos_model import Evento
 
-async def create_evento(evento: EventoBaseSchema, db: AsyncSession):
+async def create_evento(evento: EventoBaseSchema, db: AsyncSession, organizador_id: UUID):
     data_inicio = datetime.strptime(evento.data_inicio, "%d/%m/%Y")
-    novo_evento: Evento = Evento(nome=evento.nome, descricao=evento.descricao, data_inicio=data_inicio, capacidade=evento.capacidade, organizador_id=UUID(evento.organizador_id))
+    novo_evento: Evento = Evento(nome=evento.nome, descricao=evento.descricao, data_inicio=data_inicio, capacidade=evento.capacidade, organizador_id=organizador_id)
     async with db as session:
         try:
             session.add(novo_evento)
@@ -41,9 +42,9 @@ async def get_evento(evento_id: int, db: AsyncSession):
         
         return evento
     
-async def update_evento(evento_id: int, evento: EventoUpdateSchema, db: AsyncSession):
+async def update_evento(evento_id: int, evento: EventoUpdateSchema, organizador_id: UUID, db: AsyncSession):
     async with db as session:
-        query = select(Evento).filter(Evento.id == evento_id)
+        query = select(Evento).filter(and_(Evento.id == evento_id, Evento.organizador_id == organizador_id))
         result = await session.execute(query)
         update_evento = result.scalars().unique().one_or_none()
 
@@ -68,9 +69,9 @@ async def update_evento(evento_id: int, evento: EventoUpdateSchema, db: AsyncSes
 
         return update_evento
     
-async def delete_evento(evento_id: int, db: AsyncSession):
+async def delete_evento(evento_id: int, db: AsyncSession, organizador_id: UUID):
     async with db as session:
-        query = select(Evento).filter(Evento.id == evento_id)
+        query = select(Evento).filter(and_(Evento.id == evento_id, Evento.organizador_id == organizador_id))
         result = await session.execute(query)
         delete_evento = result.scalars().unique().one_or_none()
 
