@@ -15,4 +15,4 @@ class Participante(settings.DBBaseModel):
     senha = Column(String, nullable=False)
     telefone = Column(String(11), nullable=True)
     criado_em = Column(DateTime, default=datetime.now(timezone("America/Bahia")))
-    eventos = relationship("Evento", secondary="participantes_eventos", back_populates="participantes", lazy="joined")
+    eventos = relationship("Evento", secondary="participantes_eventos", cascade="all, delete", back_populates="participantes", lazy="joined")

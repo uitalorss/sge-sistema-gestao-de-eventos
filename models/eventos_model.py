@@ -18,5 +18,5 @@ class Evento(settings.DBBaseModel):
     criado_em = Column(DateTime, default=datetime.now(timezone("America/Bahia")))
     atualizado_em = Column(DateTime, default=datetime.now(timezone("America/Bahia")), onupdate=datetime.now(timezone("America/Bahia")))
     organizador = relationship("Organizador", back_populates="eventos", lazy="joined")
-    participantes = relationship("Participante", secondary="participantes_eventos", back_populates="eventos", lazy="joined")
+    participantes = relationship("Participante", secondary="participantes_eventos", cascade="all, delete", back_populates="eventos", lazy="joined")
 
