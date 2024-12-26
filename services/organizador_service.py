@@ -21,7 +21,7 @@ async def create_organizador(organizador: OrganizadorCreateSchema, db: AsyncSess
 
             return novo_organizador
         except IntegrityError:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Dados informados são inválidos")
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Email informado já cadastrado.")
         
 async def get_organizador(organizador_id: UUID, db: AsyncSession):
     async with db as session:
@@ -78,7 +78,7 @@ async def login_organizador(login_data: LoginSchema, db: AsyncSession):
         organizador = result.scalars().unique().one_or_none()
 
         if organizador is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário e/ou senha incorretos.")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuário e/ou senha incorretos.")
         
         if not verify_password(login_data.senha, organizador.senha):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuário e/ou senha incorretos.")

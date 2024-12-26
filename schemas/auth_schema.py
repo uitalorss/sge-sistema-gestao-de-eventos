@@ -10,3 +10,7 @@ class LoginSchema(BaseModel):
     auth_type: LoginTypeEnum
     email: EmailStr
     senha: str
+
+class LoginResponseSchema(BaseModel):
+    access_token: str
+    token_type: str

@@ -17,7 +17,7 @@ async def create_inscricao(evento: InscricaoBaseSchema, participante_id: UUID, d
         evento_exists = await get_evento(evento_id=evento.evento_id, db=db)
         
         if len(evento_exists.participantes) == evento_exists.capacidade:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Evento com capacidade esgotada.") 
+            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Evento com capacidade esgotada.") 
 
         query = select(ParticipanteEvento).filter(and_(ParticipanteEvento.evento_id == evento.evento_id, ParticipanteEvento.participante_id == participante_id))
         result = await session.execute(query)
