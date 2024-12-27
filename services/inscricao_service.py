@@ -39,7 +39,7 @@ async def delete_inscricao(evento_id: int, participante_id: UUID, db: AsyncSessi
         inscricao = result.scalars().unique().one_or_none()
 
         if inscricao is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Inscrição não encontrada.")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Inscrição de participante não encontrada.")
 
         await session.delete(inscricao)
         await session.commit()

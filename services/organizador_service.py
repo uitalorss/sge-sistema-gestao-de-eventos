@@ -8,7 +8,7 @@ from uuid import UUID
 
 from core.auth.security import verify_password, generate_hashed_password
 from core.auth.auth import create_access_token
-from schemas.organizador_schema import OrganizadorBaseSchema, OrganizadorSchema, OrganizadorUpdateSchema, OrganizadorCreateSchema
+from schemas.organizador_schema import OrganizadorUpdateSchema, OrganizadorCreateSchema
 from schemas.auth_schema import LoginSchema
 from models.organizador_model import Organizador
 
