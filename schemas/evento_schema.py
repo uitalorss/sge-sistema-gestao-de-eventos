@@ -2,18 +2,7 @@ from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 from uuid import UUID
 from datetime import datetime
-
-
-class ParticipanteBaseSchema(BaseModel):
-    nome: str
-    email: EmailStr
-    telefone: str
-
-class EventoBaseSchema(BaseModel):
-    nome: str
-    descricao: str
-    data_inicio: str
-    capacidade: int
+from . import EventoBaseSchema, ParticipanteBaseSchema
 
 class EventoSchema(EventoBaseSchema):
     id: int
