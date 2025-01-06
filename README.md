@@ -1,4 +1,4 @@
-# todo-list
+# sistema-gestao-eventos
 
 <!---Esses são exemplos. Veja https://shields.io para outras pessoas ou para personalizar este conjunto de escudos. Você pode querer incluir dependências, status do projeto e informações de licença aqui--->
 
@@ -77,4 +77,4 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
 
 Esse projeto está sob licença. Veja o arquivo [LICENÇA](LICENSE.md) para mais detalhes.
 
-[⬆ Voltar ao topo](#todo-list)<br>
+[⬆ Voltar ao topo](#sistema-gestao-eventos)<br>
