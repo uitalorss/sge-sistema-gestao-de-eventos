@@ -25,8 +25,8 @@ async def post_inscricao(evento: InscricaoBaseSchema, db: AsyncSession = Depends
 async def get(db: AsyncSession = Depends(get_session), usuario_logado: Participante = Depends(get_current_user)):
     return await get_participante(participante_id=usuario_logado.id, db=db)
 
-@router.put("/", response_model=ParticipanteSchema, status_code=status.HTTP_202_ACCEPTED, responses={**auth_responses, **generate_not_found_response("Participante")})
-async def put(participante: ParticipanteUpdateSchema, db: AsyncSession = Depends(get_session), usuario_logado: Participante = Depends(get_current_user)):
+@router.patch("/", response_model=ParticipanteSchema, status_code=status.HTTP_202_ACCEPTED, responses={**auth_responses, **generate_not_found_response("Participante")})
+async def patch(participante: ParticipanteUpdateSchema, db: AsyncSession = Depends(get_session), usuario_logado: Participante = Depends(get_current_user)):
     return await update_participante(participante_id=usuario_logado.id, participante=participante, db=db)
 
 @router.delete("/", status_code=status.HTTP_204_NO_CONTENT, responses={**auth_responses, **generate_not_found_response("Participante")})

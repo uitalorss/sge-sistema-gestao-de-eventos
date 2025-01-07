@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from uuid import UUID
 from core.auth.auth import create_access_token
 from core.auth.security import generate_hashed_password, verify_password
-from schemas.participante_schema import ParticipanteBaseSchema, ParticipanteUpdateSchema, ParticipanteSchema, ParticipanteCreateSchema
+from schemas.participante_schema import ParticipanteUpdateSchema, ParticipanteCreateSchema
 from schemas.auth_schema import LoginSchema
 from models.participante_model import Participante
 
@@ -24,9 +24,7 @@ async def create_participante(participante: ParticipanteCreateSchema, db: AsyncS
         
 async def get_participante(participante_id: UUID, db: AsyncSession):
     async with db as session:
-        query = select(Participante).filter(Participante.id == participante_id)
-        result = await session.execute(query)
-        participante = result.scalars().unique().one_or_none()
+        participante = await pegar_participante(participante_id=participante_id, db=session)
 
         if participante is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Participante não encontrado.")
@@ -35,21 +33,13 @@ async def get_participante(participante_id: UUID, db: AsyncSession):
     
 async def update_participante(participante_id: UUID, participante: ParticipanteUpdateSchema, db: AsyncSession):
     async with db as session:
-        query = select(Participante).filter(Participante.id == participante_id)
-        result = await session.execute(query)
-        update_participante = result.scalars().unique().one_or_none()
+        update_participante = await pegar_participante(participante_id=participante_id, db=session)
 
         if update_participante is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Participante não encontrado.")
         
-        if participante.nome:
-            update_participante.nome = participante.nome
-
-        if participante.email:
-            update_participante.email = participante.email
-
-        if participante.telefone:
-            update_participante.telefone = participante.telefone
+        for field, value in participante.model_dump(exclude_unset=True).items():
+            setattr(update_participante, field, value)
 
         await session.commit()
 
@@ -57,9 +47,7 @@ async def update_participante(participante_id: UUID, participante: ParticipanteU
     
 async def delete_participante(participante_id: UUID, db: AsyncSession):
     async with db as session:
-        query = select(Participante).filter(Participante.id == participante_id)
-        result = await session.execute(query)
-        delete_participante = result.scalars().unique().one_or_none()
+        delete_participante = await pegar_participante(participante_id, session)
 
         if delete_participante is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Participante não encontrado.")
@@ -84,3 +72,11 @@ async def login_participante(login_data: LoginSchema, db: AsyncSession):
         participante_id = str(participante.id)
 
         return create_access_token(sub=participante_id, data_type="Participante")
+    
+
+async def pegar_participante(participante_id: UUID, db: AsyncSession):
+    query = select(Participante).filter(Participante.id == participante_id)
+    result = await db.execute(query)
+    participante = result.scalars().unique().one_or_none()
+
+    return participante
