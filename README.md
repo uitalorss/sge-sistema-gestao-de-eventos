@@ -18,6 +18,7 @@ A API de Lista de Tarefas é um projeto desenvolvido com o intuito de consolidar
     - FastAPI
     - SQLAlchemy
     - JWT
+    - Redis
 
 ## 🚀 Instalando o projeto
 - Faça o clone do projeto através do comando `git clone https://github.com/uitalorss/todo-list_fast_api.git`
