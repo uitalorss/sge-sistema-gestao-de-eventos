@@ -15,7 +15,7 @@ class EventoSchema(EventoBaseSchema):
 class EventoUpdateSchema(BaseModel):
     nome: Optional[str] = None
     descricao: Optional[str] = None
-    data_inicio: Optional[datetime] = None
+    data_inicio: Optional[str] = None
     capacidade: Optional[int] = None
     
 class EventoResponseSchemaCompleto(BaseModel):

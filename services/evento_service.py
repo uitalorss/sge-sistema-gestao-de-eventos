@@ -52,10 +52,7 @@ async def get_todos_eventos(db: AsyncSession):
 
 async def get_evento(evento_id: int, db: AsyncSession):
     async with db as session:
-        query = select(Evento).filter(Evento.id == evento_id)
-        result = await session.execute(query)
-        evento = result.scalars().unique().one_or_none()
-
+        evento = await pegar_evento(evento_id, db)
         if evento is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento não encontrado.")
         
@@ -63,24 +60,14 @@ async def get_evento(evento_id: int, db: AsyncSession):
     
 async def update_evento(evento_id: int, evento: EventoUpdateSchema, organizador_id: UUID, db: AsyncSession):
     async with db as session:
-        query = select(Evento).filter(and_(Evento.id == evento_id, Evento.organizador_id == organizador_id))
-        result = await session.execute(query)
-        update_evento = result.scalars().unique().one_or_none()
-
-        if update_evento is None:
+        update_evento = await pegar_evento(evento_id, db)
+        if update_evento is None or update_evento.organizador_id != organizador_id:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento não encontrado.")
         
-        if evento.nome:
-            update_evento.nome = evento.nome
-
-        if evento.descricao:
-            update_evento.descricao = evento.descricao
-        
-        if evento.data_inicio:
-            update_evento.data_inicio = evento.data_inicio
-
-        if evento.capacidade:
-            update_evento.capacidade = evento.capacidade
+        for field, value in evento.model_dump(exclude_unset=True).items():
+            if field == "data_inicio":
+                value = datetime.strptime(value, "%d/%m/%Y")
+            setattr(update_evento, field, value)
 
         update_evento.atualizado_em = datetime.now()
 
@@ -92,11 +79,8 @@ async def update_evento(evento_id: int, evento: EventoUpdateSchema, organizador_
     
 async def delete_evento(evento_id: int, db: AsyncSession, organizador_id: UUID):
     async with db as session:
-        query = select(Evento).filter(and_(Evento.id == evento_id, Evento.organizador_id == organizador_id))
-        result = await session.execute(query)
-        delete_evento = result.scalars().unique().one_or_none()
-
-        if delete_evento is None:
+        delete_evento = await pegar_evento(evento_id, db)
+        if delete_evento is None or delete_evento.organizador_id != organizador_id:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento não encontrado.")
         
         await session.delete(delete_evento)
@@ -105,3 +89,11 @@ async def delete_evento(evento_id: int, db: AsyncSession, organizador_id: UUID):
             redis_db.delete("eventos")
 
         return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+async def pegar_evento(evento_id: int, db: AsyncSession):
+    query = select(Evento).filter(Evento.id == evento_id)
+    result = await db.execute(query)
+    evento = result.scalars().unique().one_or_none()
+
+    return evento
+        
