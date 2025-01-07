@@ -24,7 +24,8 @@ async def create_evento(evento: EventoBaseSchema, db: AsyncSession, organizador_
             session.add(novo_evento)
             await session.commit()
 
-            redis_db.delete("eventos")
+            if redis_db.exists("eventos"):
+                redis_db.delete("eventos")
 
             return novo_evento
         except IntegrityError:
@@ -84,7 +85,8 @@ async def update_evento(evento_id: int, evento: EventoUpdateSchema, organizador_
         update_evento.atualizado_em = datetime.now()
 
         await session.commit()
-        redis_db.delete("eventos")
+        if redis_db.exists("eventos"):
+            redis_db.delete("eventos")
 
         return update_evento
     
@@ -99,6 +101,7 @@ async def delete_evento(evento_id: int, db: AsyncSession, organizador_id: UUID):
         
         await session.delete(delete_evento)
         await session.commit()
-        redis_db.delete("eventos")
+        if redis_db.exists("eventos"):
+            redis_db.delete("eventos")
 
         return Response(status_code=status.HTTP_204_NO_CONTENT)
