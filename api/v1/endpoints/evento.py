@@ -28,7 +28,7 @@ async def get_eventos(db: AsyncSession = Depends(get_session)):
 async def get(evento_id: int, db: AsyncSession = Depends(get_session)):
     return await get_evento(evento_id, db)
 
-@router.put("/{evento_id}", response_model=EventoResponseSchema, status_code=status.HTTP_202_ACCEPTED, responses={**auth_responses, **generate_not_found_response("Evento")})
+@router.patch("/{evento_id}", response_model=EventoResponseSchema, status_code=status.HTTP_202_ACCEPTED, responses={**auth_responses, **generate_not_found_response("Evento")})
 async def put(evento_id: int, evento: EventoUpdateSchema, db: AsyncSession = Depends(get_session), usuario_logado: Organizador = Depends(get_current_user)):
     return await update_evento(evento_id=evento_id, evento=evento, db=db, organizador_id=usuario_logado.id)
 
