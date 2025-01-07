@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status, Response
-
+import redis
+import json
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -13,6 +14,8 @@ from schemas.evento_schema import EventoBaseSchema, EventoUpdateSchema, EventoRe
 
 from models.eventos_model import Evento
 
+redis_db = redis.Redis(host='localhost', port=6379, db=0)
+
 async def create_evento(evento: EventoBaseSchema, db: AsyncSession, organizador_id: UUID):
     data_inicio = datetime.strptime(evento.data_inicio, "%d/%m/%Y")
     novo_evento: Evento = Evento(nome=evento.nome, descricao=evento.descricao, data_inicio=data_inicio, capacidade=evento.capacidade, organizador_id=organizador_id)
@@ -21,15 +24,30 @@ async def create_evento(evento: EventoBaseSchema, db: AsyncSession, organizador_
             session.add(novo_evento)
             await session.commit()
 
+            redis_db.delete("eventos")
+
             return novo_evento
         except IntegrityError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Favor verificar dados.")
 
 async def get_todos_eventos(db: AsyncSession):
-    async with db as session:
-        result = await session.execute(select(Evento))
-        eventos = result.unique().scalars().all()
-        return [EventoResponseSchema.model_validate(evento) for evento in eventos]
+    if redis_db.get("eventos"):
+        eventos_data = redis_db.get("eventos")
+        eventos = json.loads(eventos_data)
+        return eventos
+
+    else:
+        async with db as session:
+            result = await session.execute(select(Evento))
+            eventos_db = result.unique().scalars().all()
+            eventos = [EventoResponseSchema.model_validate(evento).model_dump() for evento in eventos_db]
+            for evento in eventos:
+                evento["organizador_id"] = str(evento["organizador_id"]) 
+                evento["data_inicio"] = str(evento["data_inicio"])
+            
+            redis_db.set("eventos", json.dumps(eventos))
+
+            return eventos
 
 async def get_evento(evento_id: int, db: AsyncSession):
     async with db as session:
@@ -66,6 +84,7 @@ async def update_evento(evento_id: int, evento: EventoUpdateSchema, organizador_
         update_evento.atualizado_em = datetime.now()
 
         await session.commit()
+        redis_db.delete("eventos")
 
         return update_evento
     
@@ -80,5 +99,6 @@ async def delete_evento(evento_id: int, db: AsyncSession, organizador_id: UUID):
         
         await session.delete(delete_evento)
         await session.commit()
+        redis_db.delete("eventos")
 
         return Response(status_code=status.HTTP_204_NO_CONTENT)
