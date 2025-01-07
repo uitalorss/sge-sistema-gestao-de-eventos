@@ -1,10 +1,11 @@
 from typing import Optional, List
 
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import EmailStr, field_validator
 from uuid import UUID
 from datetime import datetime
 from utils.valida_telefone import valida_telefone
-from . import EventoBaseSchema, ParticipanteBaseSchema
+from . import ParticipanteBaseSchema
+from schemas.evento_schema import EventoResponseSchema
 
 class ParticipanteCreateSchema(ParticipanteBaseSchema):
     senha: str
@@ -26,7 +27,7 @@ class ParticipanteUpdateSchema(ParticipanteBaseSchema):
         return valida_telefone(v)
 
 class ParticipanteEventosSchema(ParticipanteSchema):
-    eventos: List[EventoBaseSchema]
+    eventos: List[EventoResponseSchema]
 
     class Config:
         from_attributes = True
