@@ -9,7 +9,7 @@ from datetime import datetime
 class Evento(settings.DBBaseModel):
     __tablename__ = 'eventos'
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     nome = Column(String, nullable=False)
     descricao = Column(String, nullable=True)
     data_inicio = Column(DateTime, nullable=False)
