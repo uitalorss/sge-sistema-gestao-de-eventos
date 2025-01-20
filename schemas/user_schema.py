@@ -10,3 +10,7 @@ class UserSchema(BaseModel):
 
 class CreateUserSchema(UserSchema):
     senha: str
+
+class LoginUserSchema(BaseModel):
+    email: EmailStr
+    senha: str
