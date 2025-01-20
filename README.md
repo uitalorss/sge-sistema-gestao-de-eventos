@@ -26,6 +26,7 @@ A API de Lista de Tarefas é um projeto desenvolvido com o intuito de consolidar
 - Configure as variáveis de ambiente do backend em um arquivo `.env`.
   - Na pasta já há um arquivo .env.example.
   - Instale as dependências através do comando `pip install -r requirements.txt`
+  - Exeute `alembic upgrade head` para as migrações do banco de dados.
     
 ## ☕ Usando o projeto
 - Acesse a pasta do projeto.
