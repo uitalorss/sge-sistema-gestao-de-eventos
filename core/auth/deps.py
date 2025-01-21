@@ -44,7 +44,6 @@ async def get_current_user(
         payload = jwt.decode(token.credentials, settings.JWT_KEY, algorithms=settings.ALGORITHM,options={"verify_aud": False})
         user_id = payload.get("sub")
         token_scopes = payload.get("scopes", [])
-        print(token_scopes)
         if user_id is None:
             raise credential_exception
         

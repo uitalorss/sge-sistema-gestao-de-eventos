@@ -16,9 +16,9 @@ from models.eventos_model import Evento
 
 redis_db = redis.Redis(host='localhost', port=6379, db=0)
 
-async def create_evento(evento: EventoBaseSchema, db: AsyncSession, organizador_id: UUID):
+async def create_evento(evento: EventoBaseSchema, db: AsyncSession, usuario_id: UUID):
     data_inicio = datetime.strptime(evento.data_inicio, "%d/%m/%Y")
-    novo_evento: Evento = Evento(nome=evento.nome, descricao=evento.descricao, data_inicio=data_inicio, capacidade=evento.capacidade, organizador_id=organizador_id)
+    novo_evento: Evento = Evento(nome=evento.nome, descricao=evento.descricao, data_inicio=data_inicio, capacidade=evento.capacidade, user_id=usuario_id)
     async with db as session:
         try:
             session.add(novo_evento)
@@ -43,7 +43,7 @@ async def get_todos_eventos(db: AsyncSession):
             eventos_db = result.unique().scalars().all()
             eventos = [EventoResponseSchema.model_validate(evento).model_dump() for evento in eventos_db]
             for evento in eventos:
-                evento["organizador_id"] = str(evento["organizador_id"]) 
+                evento["user_id"] = str(evento["user_id"]) 
                 evento["data_inicio"] = str(evento["data_inicio"])
             
             redis_db.set("eventos", json.dumps(eventos))
@@ -58,10 +58,10 @@ async def get_evento(evento_id: int, db: AsyncSession):
         
         return evento
     
-async def update_evento(evento_id: int, evento: EventoUpdateSchema, organizador_id: UUID, db: AsyncSession):
+async def update_evento(evento_id: int, evento: EventoUpdateSchema, user_id: UUID, db: AsyncSession):
     async with db as session:
         update_evento = await pegar_evento(evento_id, db)
-        if update_evento is None or update_evento.organizador_id != organizador_id:
+        if update_evento is None or update_evento.user_id != user_id:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento não encontrado.")
         
         for field, value in evento.model_dump(exclude_unset=True).items():
@@ -77,10 +77,10 @@ async def update_evento(evento_id: int, evento: EventoUpdateSchema, organizador_
 
         return update_evento
     
-async def delete_evento(evento_id: int, db: AsyncSession, organizador_id: UUID):
+async def delete_evento(evento_id: int, db: AsyncSession, user_id: UUID):
     async with db as session:
         delete_evento = await pegar_evento(evento_id, db)
-        if delete_evento is None or delete_evento.organizador_id != organizador_id:
+        if delete_evento is None or delete_evento.user_id != user_id:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento não encontrado.")
         
         await session.delete(delete_evento)

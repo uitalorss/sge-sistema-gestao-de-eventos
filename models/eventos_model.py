@@ -14,9 +14,9 @@ class Evento(settings.DBBaseModel):
     descricao = Column(String, nullable=True)
     data_inicio = Column(DateTime, nullable=False)
     capacidade = Column(Integer, nullable=False)
-    organizador_id = Column(UUID(as_uuid=True), ForeignKey('organizadores.id'), nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('usuarios.id'), nullable=False)
     criado_em = Column(DateTime, default=datetime.now(timezone("America/Bahia")))
     atualizado_em = Column(DateTime, default=datetime.now(timezone("America/Bahia")), onupdate=datetime.now(timezone("America/Bahia")))
-    organizador = relationship("Organizador", back_populates="eventos", lazy="joined")
+    usuario = relationship("User", back_populates="eventos", lazy="joined")
     participantes = relationship("Participante", secondary="participantes_eventos", cascade="all, delete", back_populates="eventos", lazy="joined")
 

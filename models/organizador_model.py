@@ -16,4 +16,3 @@ class Organizador(settings.DBBaseModel):
     senha = Column(String, nullable=False)
     telefone = Column(String(11), nullable=True)
     criado_em = Column(DateTime, default=datetime.now(timezone("America/Bahia")))
-    eventos = relationship("Evento", back_populates="organizador", uselist=True, cascade="all, delete-orphan", lazy="joined")

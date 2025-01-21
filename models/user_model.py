@@ -21,3 +21,6 @@ class User(settings.DBBaseModel):
     perfil = relationship(
         "Profile", back_populates="usuario", cascade="all, delete-orphan"
     )
+    eventos = relationship(
+        "Evento", back_populates="usuario", lazy="joined", uselist=True, cascade="all, delete-orphan"
+    )

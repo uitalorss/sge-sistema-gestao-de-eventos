@@ -24,7 +24,7 @@ class EventoResponseSchemaCompleto(BaseModel):
     descricao: str
     data_inicio: datetime
     capacidade: int
-    organizador_id: UUID
+    user_id: UUID
     criado_em: datetime
     atualizado_em: datetime
     participantes: List[ParticipanteBaseSchema]
@@ -34,7 +34,7 @@ class EventoResponseSchemaCompleto(BaseModel):
 
 class EventoResponseSchema(EventoBaseSchema):
     data_inicio: datetime
-    organizador_id: UUID
+    user_id: UUID
 
     class Config:
         from_attributes = True
