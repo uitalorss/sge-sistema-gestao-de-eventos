@@ -1,11 +1,11 @@
+from uuid import UUID
 from fastapi import HTTPException, status
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload, joinedload
-from sqlalchemy.exc import IntegrityError
 from schemas.user_schema import CreateUserSchema, LoginUserSchema
 from models.user_model import User
-from models.profile_model import Profile
+from models.profile_model import Profile, PerfilEnum
 from core.auth.security import generate_hashed_password, verify_password
 from core.auth.auth import create_access_token
 
@@ -46,3 +46,74 @@ async def login_user(user_data: LoginUserSchema, db: AsyncSession):
         return create_access_token(sub=str(user.id), data_type=high_access_profile.tipo_perfil)
 
 
+async def get_user_data(user_id: UUID, db: AsyncSession):
+    async with db as session:
+        result = await session.execute(select(User).options(selectinload(User.perfil)).filter(User.id == user_id))
+        user = result.scalars().unique().one_or_none()
+
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado.")
+        
+        return {
+            "id": user.id,
+            "nome": user.nome,
+            "email": user.email,
+            "telefone": user.telefone,
+            "criado_em": user.criado_em,
+        }
+    
+async def update_profile(user_id: User, profile_to_update: PerfilEnum, db: AsyncSession):
+    async with db as session:
+        query = select(User).options(joinedload(User.perfil)).filter(User.id == user_id)
+        result = await session.execute(query)
+        user = result.scalars().unique().one_or_none()
+
+        if not user or not user.perfil:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuário ou perfil não encontrado."
+            )
+
+        available_profile = next((perfil for perfil in user.perfil if perfil.tipo_perfil == profile_to_update.value), None)
+        if available_profile is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Perfil não disponível para o usuário."
+            )
+        
+        access_token = create_access_token(sub=str(user.id), data_type=available_profile.tipo_perfil)
+
+        return {
+            "message": f"Perfil alterado para {available_profile.tipo_perfil.value}.",
+            "access_token": access_token
+        }
+    
+async def add_profile(user_id: UUID, profile_to_add: PerfilEnum, db: AsyncSession):
+    async with db as session:
+        query = select(User).options(selectinload(User.perfil)).filter(User.id == user_id)
+        result = await session.execute(query)
+        user = result.scalars().unique().one_or_none()
+
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuário ou perfil não encontrado."
+            )
+        
+        for perfil in user.perfil:
+            if perfil.tipo_perfil == profile_to_add.value:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Perfil já adicionado ao usuário."
+                )
+
+        
+        
+        new_profile = Profile(usuario_id=user.id, tipo_perfil=profile_to_add)
+        session.add(new_profile)
+
+        await session.commit()
+
+        return {
+            "message": "Perfil adicionado ao usuário com sucesso."
+        }
