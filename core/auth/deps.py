@@ -11,8 +11,6 @@ from .auth import oauth2_schema
 from uuid import UUID
 
 from models.user_model import User
-from models.participante_model import Participante
-from models.organizador_model import Organizador
 
 async def get_session() -> AsyncGenerator:
     session: AsyncSession = Session()
