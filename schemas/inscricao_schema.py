@@ -9,5 +9,5 @@ class InscricaoBaseSchema(BaseModel):
     evento_id: int
 
 class InscricaoSchema(InscricaoBaseSchema):
-    participante_id: UUID
+    user_id: UUID
     criado_em: datetime

@@ -8,33 +8,33 @@ from sqlalchemy.future import select
 from uuid import UUID
 
 from schemas.inscricao_schema import InscricaoBaseSchema
-from models.participante_evento_model import ParticipanteEvento
+from models.inscricao_model import Inscricao
 from services.evento_service import get_evento
 
 
-async def create_inscricao(evento: InscricaoBaseSchema, participante_id: UUID, db: AsyncSession):
+async def create_inscricao(evento: InscricaoBaseSchema, user_id: UUID, db: AsyncSession):
     async with db as session:
         evento_exists = await get_evento(evento_id=evento.evento_id, db=db)
         
         if len(evento_exists.participantes) == evento_exists.capacidade:
             raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Evento com capacidade esgotada.") 
-
-        query = select(ParticipanteEvento).filter(and_(ParticipanteEvento.evento_id == evento.evento_id, ParticipanteEvento.participante_id == participante_id))
+        
+        query = select(Inscricao).filter(and_(Inscricao.evento_id == evento.evento_id, Inscricao.user_id == user_id))
         result = await session.execute(query)
         is_available_inscricao = result.scalars().unique().one_or_none()
 
         if is_available_inscricao is not None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Usuário já cadastrado em evento.")
 
-        nova_inscricao: ParticipanteEvento = ParticipanteEvento(evento_id=evento.evento_id, participante_id=participante_id)
+        nova_inscricao: Inscricao = Inscricao(evento_id=evento.evento_id, user_id=user_id)
         session.add(nova_inscricao)
         await session.commit()
 
         return nova_inscricao
 
-async def delete_inscricao(evento_id: int, participante_id: UUID, db: AsyncSession):
+async def delete_inscricao(evento_id: int, user_id: UUID, db: AsyncSession):
     async with db as session:
-        query = select(ParticipanteEvento).filter(and_(ParticipanteEvento.evento_id == evento_id, ParticipanteEvento.participante_id == participante_id))
+        query = select(Inscricao).filter(and_(Inscricao.evento_id == evento_id, Inscricao.user_id == user_id))
         result = await session.execute(query)
         inscricao = result.scalars().unique().one_or_none()
 

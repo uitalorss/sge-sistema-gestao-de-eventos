@@ -24,3 +24,6 @@ class User(settings.DBBaseModel):
     eventos = relationship(
         "Evento", back_populates="usuario", lazy="joined", uselist=True, cascade="all, delete-orphan"
     )
+    eventos_inscritos = relationship(
+        "Evento", secondary="inscricoes", cascade="all, delete", back_populates="participantes", lazy="joined", uselist=True
+    )
