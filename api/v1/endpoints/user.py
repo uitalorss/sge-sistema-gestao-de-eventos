@@ -11,6 +11,7 @@ from schemas.user_schema import (
     CreateUserSchema,
     LoginUserSchema,
     UserResponseSchema,
+    UserUpdateSchema,
 )
 from services.user_service import (
     add_profile,
@@ -18,6 +19,7 @@ from services.user_service import (
     get_user_data,
     login_user,
     update_profile,
+    update_user,
 )
 
 router = APIRouter()
@@ -50,6 +52,15 @@ async def get_user(
     db: AsyncSession = Depends(get_session),
 ):
     return await get_user_data(user_id=user.id, db=db)
+
+
+@router.patch("/", status_code=status.HTTP_202_ACCEPTED)
+async def patch_user(
+    user_data: UserUpdateSchema,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_session),
+):
+    return await update_user(user_data=user_data, user_id=user.id, db=db)
 
 
 @router.patch("/update-profile", status_code=status.HTTP_200_OK)

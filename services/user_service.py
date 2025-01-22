@@ -9,7 +9,11 @@ from core.auth.auth import create_access_token
 from core.auth.security import generate_hashed_password, verify_password
 from models.profile_model import PerfilEnum, Profile
 from models.user_model import User
-from schemas.user_schema import CreateUserSchema, LoginUserSchema
+from schemas.user_schema import (
+    CreateUserSchema,
+    LoginUserSchema,
+    UserUpdateSchema,
+)
 
 
 async def create_user(user: CreateUserSchema, db: AsyncSession):
@@ -93,6 +97,29 @@ async def get_user_data(user_id: UUID, db: AsyncSession):
             )
 
         return user
+
+
+async def update_user(
+    user_data: UserUpdateSchema, user_id: UUID, db: AsyncSession
+):
+    async with db as session:
+        result = await session.execute(select(User).filter(User.id == user_id))
+        user_update = result.scalars().first()
+
+        if user_update is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuário não encontrado",
+            )
+
+        for field, value in user_data.model_dump(exclude_unset=True).items():
+            if field == "senha":
+                value = generate_hashed_password(value)
+            setattr(user_update, field, value)
+
+        await session.commit()
+
+        return {"message": "Usuário atualizado com sucesso."}
 
 
 async def update_profile(

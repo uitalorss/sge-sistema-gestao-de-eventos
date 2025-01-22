@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
@@ -38,3 +38,10 @@ class UserResponseSchema(BaseModel):
     criado_em: datetime
     eventos: list[EventoListUserSchema]
     eventos_inscritos: List[InscricaoListUserSchema]
+
+
+class UserUpdateSchema(BaseModel):
+    nome: Optional[str] = None
+    email: Optional[str] = None
+    telefone: Optional[str] = None
+    senha: Optional[str] = None
