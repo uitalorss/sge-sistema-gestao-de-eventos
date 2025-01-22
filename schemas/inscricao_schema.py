@@ -1,14 +1,17 @@
-from pydantic import BaseModel
+from datetime import datetime
 from uuid import UUID
 
-from datetime import datetime
+from pydantic import BaseModel
+
 
 class InscricaoBaseSchema(BaseModel):
     evento_id: int
 
+
 class InscricaoSchema(InscricaoBaseSchema):
     user_id: UUID
     criado_em: datetime
+
 
 class InscricaoListUserSchema(BaseModel):
     nome: str

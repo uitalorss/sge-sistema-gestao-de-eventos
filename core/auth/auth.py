@@ -1,14 +1,17 @@
+from datetime import datetime, timedelta
+
+import jwt
 from fastapi.security import HTTPBearer
+from pytz import timezone
 
 from core.configs import settings
 
-from pytz import timezone
-from datetime import timedelta, datetime
-import jwt
-
 oauth2_schema = HTTPBearer(bearerFormat="JWT", auto_error=False)
 
-def create_token(token_type: str, lifetime: timedelta, sub: str, data_type: str):
+
+def create_token(
+    token_type: str, lifetime: timedelta, sub: str, data_type: str
+):
     payload = {}
     timezone_ba = timezone("America/Bahia")
     expires_in = datetime.now(tz=timezone_ba) + lifetime
@@ -23,5 +26,9 @@ def create_token(token_type: str, lifetime: timedelta, sub: str, data_type: str)
 
 
 def create_access_token(sub: str, data_type: str):
-    return create_token(token_type="access_token", lifetime=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES), sub=sub, data_type=data_type)
-
+    return create_token(
+        token_type="access_token",
+        lifetime=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+        sub=sub,
+        data_type=data_type,
+    )

@@ -1,10 +1,12 @@
+import os
 from typing import ClassVar
+
+import dotenv
 from pydantic_settings import BaseSettings
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
-import os
-import dotenv
 
 dotenv.load_dotenv()
+
 
 class Settings(BaseSettings):
     API_V1_STR: ClassVar[str] = "/api/v1"
@@ -17,5 +19,6 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive: True
+
 
 settings: Settings = Settings()

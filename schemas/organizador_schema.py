@@ -1,11 +1,13 @@
-from typing import Optional, List
+from datetime import datetime
+from typing import List, Optional
+from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, field_validator
-from uuid import UUID
-from datetime import datetime
+
+from utils.valida_telefone import valida_telefone
 
 from .evento_schema import EventoResponseSchema
-from utils.valida_telefone import valida_telefone
+
 
 class OrganizadorBaseSchema(BaseModel):
     nome: str
@@ -15,7 +17,8 @@ class OrganizadorBaseSchema(BaseModel):
     @field_validator("telefone")
     def validate_telefone(cls, v):
         return valida_telefone(v)
-    
+
+
 class OrganizadorCreateSchema(OrganizadorBaseSchema):
     senha: str
 
@@ -27,6 +30,7 @@ class OrganizadorSchema(OrganizadorBaseSchema):
     class Config:
         from_attributes = True
 
+
 class OrganizadorUpdateSchema(OrganizadorBaseSchema):
     nome: Optional[str] = None
     email: Optional[EmailStr] = None
@@ -35,6 +39,7 @@ class OrganizadorUpdateSchema(OrganizadorBaseSchema):
     @field_validator("telefone")
     def validate_telefone(cls, v):
         return valida_telefone(v)
+
 
 class OrganizadorEventoSchema(OrganizadorBaseSchema):
     eventos: List[EventoResponseSchema]

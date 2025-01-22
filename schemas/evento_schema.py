@@ -1,9 +1,12 @@
-from typing import Optional, List
-from pydantic import BaseModel, EmailStr
-from uuid import UUID
 from datetime import datetime
+from typing import List, Optional
+from uuid import UUID
+
+from pydantic import BaseModel, EmailStr
+
 from . import EventoBaseSchema, ParticipanteBaseSchema
 from .user_schema import UserInListSchema, UserSchema
+
 
 class EventoSchema(EventoBaseSchema):
     id: int
@@ -13,12 +16,14 @@ class EventoSchema(EventoBaseSchema):
     class Config:
         from_attributes = True
 
+
 class EventoUpdateSchema(BaseModel):
     nome: Optional[str] = None
     descricao: Optional[str] = None
     data_inicio: Optional[str] = None
     capacidade: Optional[int] = None
-    
+
+
 class EventoResponseSchemaCompleto(BaseModel):
     id: int
     nome: str
@@ -32,6 +37,7 @@ class EventoResponseSchemaCompleto(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 class EventoResponseSchema(EventoBaseSchema):
     data_inicio: datetime
