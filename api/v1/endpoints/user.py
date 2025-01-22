@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.user_schema import CreateUserSchema, LoginUserSchema
+from schemas.user_schema import CreateUserSchema, LoginUserSchema, UserResponseSchema
 from models.user_model import User
 from models.profile_model import PerfilEnum
 from core.auth.deps import get_session, get_current_user
@@ -27,7 +27,7 @@ async def post_login_user(
 
     return JSONResponse(content={"access_token": token, "token-type": "bearer"}, status_code=status.HTTP_202_ACCEPTED)
 
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("/", response_model=UserResponseSchema, status_code=status.HTTP_200_OK)
 async def get_user(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_session)

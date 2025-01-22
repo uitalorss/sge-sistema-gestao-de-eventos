@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel
 from uuid import UUID
 
@@ -11,3 +9,9 @@ class InscricaoBaseSchema(BaseModel):
 class InscricaoSchema(InscricaoBaseSchema):
     user_id: UUID
     criado_em: datetime
+
+class InscricaoListUserSchema(BaseModel):
+    nome: str
+    descricao: str
+    data_inicio: datetime
+    capacidade: int

@@ -53,14 +53,8 @@ async def get_user_data(user_id: UUID, db: AsyncSession):
 
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado.")
-        
-        return {
-            "id": user.id,
-            "nome": user.nome,
-            "email": user.email,
-            "telefone": user.telefone,
-            "criado_em": user.criado_em,
-        }
+
+        return user
     
 async def update_profile(user_id: User, profile_to_update: PerfilEnum, db: AsyncSession):
     async with db as session:
