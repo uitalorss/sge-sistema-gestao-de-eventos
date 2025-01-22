@@ -3,6 +3,7 @@ from pydantic import BaseModel, EmailStr
 from uuid import UUID
 from datetime import datetime
 from . import EventoBaseSchema, ParticipanteBaseSchema
+from .user_schema import UserInListSchema, UserSchema
 
 class EventoSchema(EventoBaseSchema):
     id: int
@@ -24,17 +25,17 @@ class EventoResponseSchemaCompleto(BaseModel):
     descricao: str
     data_inicio: datetime
     capacidade: int
-    user_id: UUID
+    organizador: str
     criado_em: datetime
     atualizado_em: datetime
-    participantes: List[ParticipanteBaseSchema]
+    participantes: List[UserInListSchema]
 
     class Config:
         from_attributes = True
 
 class EventoResponseSchema(EventoBaseSchema):
     data_inicio: datetime
-    user_id: UUID
+    organizador: str = ""
 
     class Config:
         from_attributes = True

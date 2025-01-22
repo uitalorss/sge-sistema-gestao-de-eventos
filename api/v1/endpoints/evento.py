@@ -28,7 +28,7 @@ async def post(
 ):
     return await create_evento(evento=evento, db=db, usuario_id=user.id)
 
-@router.get("/", response_model=List[EventoResponseSchema], status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK)
 async def get_eventos(db: AsyncSession = Depends(get_session)):
     return await get_todos_eventos(db)
 

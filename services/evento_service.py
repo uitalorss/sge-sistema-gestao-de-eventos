@@ -5,6 +5,7 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload, selectinload
 
 from datetime import datetime
 
@@ -13,6 +14,7 @@ from uuid import UUID
 from schemas.evento_schema import EventoBaseSchema, EventoUpdateSchema, EventoResponseSchema
 
 from models.eventos_model import Evento
+from schemas.user_schema import UserSchema
 
 redis_db = redis.Redis(host='localhost', port=6379, db=0)
 
@@ -39,20 +41,22 @@ async def get_todos_eventos(db: AsyncSession):
 
     else:
         async with db as session:
-            result = await session.execute(select(Evento))
+            result = await session.execute(select(Evento).options(joinedload(Evento.usuario)))
             eventos_db = result.unique().scalars().all()
-            eventos = [EventoResponseSchema.model_validate(evento).model_dump() for evento in eventos_db]
-            for evento in eventos:
-                evento["user_id"] = str(evento["user_id"]) 
-                evento["data_inicio"] = str(evento["data_inicio"])
-            
-            redis_db.set("eventos", json.dumps(eventos))
+            eventos = []
+            for evento in eventos_db:
+                evento_dict = EventoResponseSchema.model_validate(evento).model_dump()
+                evento_dict["data_inicio"] = str(evento_dict["data_inicio"])
+                evento_dict["organizador"] = evento.usuario.nome
+                eventos.append(evento_dict)    
 
+            redis_db.set("eventos", json.dumps(eventos))
+                   
             return eventos
 
 async def get_evento(evento_id: int, db: AsyncSession):
     async with db as session:
-        evento = await pegar_evento(evento_id, db)
+        evento = await pegar_evento(evento_id, db=session)
         if evento is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento não encontrado.")
         
@@ -91,9 +95,21 @@ async def delete_evento(evento_id: int, db: AsyncSession, user_id: UUID):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 async def pegar_evento(evento_id: int, db: AsyncSession):
-    query = select(Evento).filter(Evento.id == evento_id)
+    query = select(Evento).options(joinedload(Evento.usuario)).filter(Evento.id == evento_id)
     result = await db.execute(query)
     evento = result.scalars().unique().one_or_none()
 
-    return evento
+    response_evento = {
+        "id": evento.id,
+        "nome": evento.nome,
+        "descricao": evento.descricao,
+        "data_inicio": str(evento.data_inicio),
+        "capacidade": evento.capacidade,
+        "organizador": evento.usuario.nome,
+        "criado_em": str(evento.criado_em),
+        "atualizado_em": str(evento.atualizado_em),
+        "participantes": evento.participantes
+    }
+
+    return response_evento
         

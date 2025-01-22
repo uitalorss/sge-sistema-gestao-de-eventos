@@ -14,3 +14,6 @@ class CreateUserSchema(UserSchema):
 class LoginUserSchema(BaseModel):
     email: EmailStr
     senha: str
+
+class UserInListSchema(BaseModel):
+    nome: str
