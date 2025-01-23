@@ -2,9 +2,10 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 
 from models.profile_model import PerfilEnum
+from utils.valida_telefone import valida_telefone
 
 from . import EventoListUserSchema
 from .inscricao_schema import InscricaoListUserSchema
@@ -19,6 +20,10 @@ class UserSchema(BaseModel):
 
 class CreateUserSchema(UserSchema):
     senha: str
+
+    @field_validator("telefone")
+    def validate_telefone(cls, v):
+        return valida_telefone(v)
 
 
 class LoginUserSchema(BaseModel):
@@ -45,3 +50,7 @@ class UserUpdateSchema(BaseModel):
     email: Optional[str] = None
     telefone: Optional[str] = None
     senha: Optional[str] = None
+
+    @field_validator("telefone")
+    def validate_telefone(cls, v):
+        return valida_telefone(v)

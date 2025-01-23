@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.auth.deps import get_current_user, get_session
-from models.organizador_model import Organizador
 from models.profile_model import PerfilEnum
 from schemas.evento_schema import (
     EventoBaseSchema,
