@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload, selectinload
@@ -195,3 +195,41 @@ async def add_profile(
         await session.commit()
 
         return {"message": "Perfil adicionado ao usuário com sucesso."}
+
+
+async def change_status_profile(
+    user_id: UUID, profile: PerfilEnum, db: AsyncSession
+):
+    async with db as session:
+        query = (
+            select(User)
+            .options(selectinload(User.perfil))
+            .filter(User.id == user_id)
+        )
+        result = await session.execute(query)
+        user = result.scalars().unique().one_or_none()
+
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuário não encontrado.",
+            )
+
+        profile_to_disable = next(
+            (
+                perfil
+                for perfil in user.perfil
+                if perfil.tipo_perfil == profile.value
+            ),
+            None,
+        )
+        if profile_to_disable is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Perfil não encontrado.",
+            )
+
+        profile_to_disable.is_active = not profile_to_disable.is_active
+        await session.commit()
+
+        return Response(status_code=status.HTTP_204_NO_CONTENT)

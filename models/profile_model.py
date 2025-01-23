@@ -1,7 +1,7 @@
 import uuid
 from enum import Enum
 
-from sqlalchemy import Column, DateTime
+from sqlalchemy import Boolean, Column, DateTime
 from sqlalchemy import Enum as SQLAlchemyEnum
 from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -28,5 +28,6 @@ class Profile(settings.DBBaseModel):
         UUID(as_uuid=True), ForeignKey("usuarios.id", ondelete="cascade")
     )
     tipo_perfil = Column(SQLAlchemyEnum(PerfilEnum), nullable=False)
+    is_active = Column(Boolean, default=True)
 
     usuario = relationship("User", back_populates="perfil")

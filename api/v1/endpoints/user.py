@@ -15,6 +15,7 @@ from schemas.user_schema import (
 )
 from services.user_service import (
     add_profile,
+    change_status_profile,
     create_user,
     get_user_data,
     login_user,
@@ -83,3 +84,12 @@ async def post_add_profile(
     return await add_profile(
         user_id=user.id, profile_to_add=profile_to_add, db=db
     )
+
+
+@router.patch("/status-profile", status_code=status.HTTP_204_NO_CONTENT)
+async def patch_change_status_profile(
+    profile: PerfilEnum,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_session),
+):
+    return await change_status_profile(user_id=user.id, profile=profile, db=db)
