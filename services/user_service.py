@@ -70,15 +70,30 @@ async def login_user(user_data: LoginUserSchema, db: AsyncSession):
             "PARTICIPANTE": 2,
         }
 
-        high_access_profile = min(
-            user.perfil,
-            key=lambda profile: profile_priority.get(
-                profile.tipo_perfil, float("inf")
-            ),
-        )
-        return create_access_token(
-            sub=str(user.id), data_type=high_access_profile.tipo_perfil
-        )
+        active_profiles = [
+            perfil for perfil in user.perfil if perfil.is_active
+        ]
+        if active_profiles:
+            high_access_profile = min(
+                user.perfil,
+                key=lambda profile: profile_priority.get(
+                    profile.tipo_perfil, float("inf")
+                ),
+            )
+        else:
+            high_access_profile = min(
+                user.perfil,
+                key=lambda profile: profile_priority.get(
+                    profile.tipo_perfil, float("inf")
+                ),
+            )
+
+        token_data = {
+            "sub": str(user.id),
+            "data_type": high_access_profile.tipo_perfil,
+            "is_active": high_access_profile.is_active,
+        }
+        return create_access_token(**token_data)
 
 
 async def get_user_data(user_id: UUID, db: AsyncSession):
@@ -154,9 +169,13 @@ async def update_profile(
                 detail="Perfil não disponível para o usuário.",
             )
 
-        access_token = create_access_token(
-            sub=str(user.id), data_type=available_profile.tipo_perfil
-        )
+        token_data = {
+            "sub": str(user.id),
+            "data_type": available_profile.tipo_perfil,
+            "is_active": available_profile.is_active,
+        }
+
+        access_token = create_access_token(**token_data)
 
         return {
             "message": f"Perfil alterado para {available_profile.tipo_perfil.value}.",
@@ -215,7 +234,7 @@ async def change_status_profile(
                 detail="Usuário não encontrado.",
             )
 
-        profile_to_disable = next(
+        profile_to_change = next(
             (
                 perfil
                 for perfil in user.perfil
@@ -223,13 +242,13 @@ async def change_status_profile(
             ),
             None,
         )
-        if profile_to_disable is None:
+        if profile_to_change is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Perfil não encontrado.",
             )
 
-        profile_to_disable.is_active = not profile_to_disable.is_active
+        profile_to_change.is_active = not profile_to_change.is_active
         await session.commit()
 
         return Response(status_code=status.HTTP_204_NO_CONTENT)

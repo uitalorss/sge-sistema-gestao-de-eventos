@@ -51,6 +51,7 @@ async def get_current_user(
         )
         user_id = payload.get("sub")
         token_scopes = payload.get("scopes", [])
+        is_active = payload.get("is_active")
         if user_id is None:
             raise credential_exception
 
@@ -66,6 +67,12 @@ async def get_current_user(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Ação não permitida para o perfil informado.",
                 )
+
+        if not is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Ação não permitida para usuários inativos.",
+            )
 
     except PyJWTError:
         raise credential_exception
