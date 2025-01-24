@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, Security, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -75,21 +75,37 @@ async def patch_current_profile(
     )
 
 
-@router.post("/create-profile", status_code=status.HTTP_201_CREATED)
+@router.post("/create-profile/{user_id}", status_code=status.HTTP_201_CREATED)
 async def post_add_profile(
+    user_id: str,
     profile_to_add: PerfilEnum,
-    user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_session),
+    _user: User = Security(get_current_user, scopes=[PerfilEnum.ADMIN.value]),
 ):
+    if _user.id == UUID(user_id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Não é permitido adicionar um perfil ao usuário admin.",
+        )
+
     return await add_profile(
-        user_id=user.id, profile_to_add=profile_to_add, db=db
+        user_id=user_id, profile_to_add=profile_to_add, db=db
     )
 
 
-@router.patch("/status-profile", status_code=status.HTTP_204_NO_CONTENT)
+@router.patch(
+    "/status-profile/{user_id}", status_code=status.HTTP_204_NO_CONTENT
+)
 async def patch_change_status_profile(
+    user_id: str,
     profile: PerfilEnum,
-    user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_session),
+    _user: User = Security(get_current_user, scopes=[PerfilEnum.ADMIN.value]),
 ):
-    return await change_status_profile(user_id=user.id, profile=profile, db=db)
+    if _user.id == UUID(user_id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Não é permitido alterar o status de um usuário admin.",
+        )
+
+    return await change_status_profile(user_id=user_id, profile=profile, db=db)

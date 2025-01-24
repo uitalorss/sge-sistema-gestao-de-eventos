@@ -13,6 +13,7 @@ from core.configs import settings
 class PerfilEnum(str, Enum):
     ORGANIZADOR = "Organizador"
     PARTICIPANTE = "Participante"
+    ADMIN = "Admin"
 
 
 class Profile(settings.DBBaseModel):

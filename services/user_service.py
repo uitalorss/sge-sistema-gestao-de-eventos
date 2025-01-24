@@ -66,6 +66,7 @@ async def login_user(user_data: LoginUserSchema, db: AsyncSession):
             )
 
         profile_priority = {
+            "ADMIN": 0,
             "ORGANIZADOR": 1,
             "PARTICIPANTE": 2,
         }
@@ -73,9 +74,10 @@ async def login_user(user_data: LoginUserSchema, db: AsyncSession):
         active_profiles = [
             perfil for perfil in user.perfil if perfil.is_active
         ]
+        print(active_profiles[0].tipo_perfil)
         if active_profiles:
             high_access_profile = min(
-                user.perfil,
+                active_profiles,
                 key=lambda profile: profile_priority.get(
                     profile.tipo_perfil, float("inf")
                 ),
@@ -190,7 +192,7 @@ async def add_profile(
         query = (
             select(User)
             .options(selectinload(User.perfil))
-            .filter(User.id == user_id)
+            .filter(User.id == UUID(user_id))
         )
         result = await session.execute(query)
         user = result.scalars().unique().one_or_none()
@@ -217,13 +219,13 @@ async def add_profile(
 
 
 async def change_status_profile(
-    user_id: UUID, profile: PerfilEnum, db: AsyncSession
+    user_id: str, profile: PerfilEnum, db: AsyncSession
 ):
     async with db as session:
         query = (
             select(User)
             .options(selectinload(User.perfil))
-            .filter(User.id == user_id)
+            .filter(User.id == UUID(user_id))
         )
         result = await session.execute(query)
         user = result.scalars().unique().one_or_none()
