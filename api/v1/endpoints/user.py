@@ -4,7 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException, Security, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.auth.deps import get_current_user, get_session
+from core.auth.deps import (
+    get_current_user,
+    get_current_user_without_profile_check,
+    get_session,
+)
 from models.profile_model import PerfilEnum
 from models.user_model import User
 from schemas.user_schema import (
@@ -49,7 +53,7 @@ async def post_login_user(
     "/", response_model=UserResponseSchema, status_code=status.HTTP_200_OK
 )
 async def get_user(
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_user_without_profile_check),
     db: AsyncSession = Depends(get_session),
 ):
     return await get_user_data(user_id=user.id, db=db)
@@ -58,7 +62,7 @@ async def get_user(
 @router.patch("/", status_code=status.HTTP_202_ACCEPTED)
 async def patch_user(
     user_data: UserUpdateSchema,
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_user_without_profile_check),
     db: AsyncSession = Depends(get_session),
 ):
     return await update_user(user_data=user_data, user_id=user.id, db=db)

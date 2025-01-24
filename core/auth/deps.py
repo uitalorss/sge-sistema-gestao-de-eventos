@@ -24,8 +24,9 @@ async def get_session() -> AsyncGenerator:
         await session.close()
 
 
-async def get_current_user(
+async def get_current_user_main(
     security_scopes: SecurityScopes,
+    check_active: bool,
     db: AsyncSession = Depends(get_session),
     token: str = Depends(oauth2_schema),
 ):
@@ -67,12 +68,12 @@ async def get_current_user(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Ação não permitida para o perfil informado.",
                 )
-
-        if not is_active:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Ação não permitida para usuários inativos.",
-            )
+        if check_active:
+            if not is_active:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Ação não permitida para usuários inativos.",
+                )
 
     except PyJWTError:
         raise credential_exception
@@ -87,5 +88,24 @@ async def get_current_user(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Usuário não Autenticado",
             )
-
         return usuario
+
+
+async def get_current_user_without_profile_check(
+    security_scopes: SecurityScopes,
+    db: AsyncSession = Depends(get_session),
+    token: str = Depends(oauth2_schema),
+):
+    return await get_current_user_main(
+        security_scopes=security_scopes, db=db, token=token, check_active=False
+    )
+
+
+async def get_current_user(
+    security_scopes: SecurityScopes,
+    db: AsyncSession = Depends(get_session),
+    token: str = Depends(oauth2_schema),
+):
+    return await get_current_user_main(
+        security_scopes=security_scopes, db=db, token=token, check_active=True
+    )

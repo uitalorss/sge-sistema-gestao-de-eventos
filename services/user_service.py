@@ -74,7 +74,6 @@ async def login_user(user_data: LoginUserSchema, db: AsyncSession):
         active_profiles = [
             perfil for perfil in user.perfil if perfil.is_active
         ]
-        print(active_profiles[0].tipo_perfil)
         if active_profiles:
             high_access_profile = min(
                 active_profiles,
