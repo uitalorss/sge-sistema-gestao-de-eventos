@@ -97,7 +97,8 @@ async def login_user(user_data: LoginUserSchema, db: AsyncSession):
         return create_access_token(**token_data)
 
 
-async def get_user_data(user_id: UUID, db: AsyncSession):
+async def get_user_data(user_id: UUID, db: AsyncSession, profile: PerfilEnum):
+    print(profile)
     async with db as session:
         result = await session.execute(
             select(User)

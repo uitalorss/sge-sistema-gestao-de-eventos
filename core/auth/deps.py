@@ -109,3 +109,29 @@ async def get_current_user(
     return await get_current_user_main(
         security_scopes=security_scopes, db=db, token=token, check_active=True
     )
+
+
+async def get_current_profile(
+    token: str = Depends(oauth2_schema),
+):
+    try:
+        payload = jwt.decode(
+            token.credentials,
+            settings.JWT_KEY,
+            algorithms=[settings.ALGORITHM],
+        )
+
+        scopes = payload.get("scopes", [])
+        if not scopes:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token inválido ou perfil ausente",
+            )
+
+        return scopes
+    except PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token de acesso inválido ou expirado.",
+            headers={"WWW-authenticate": "Bearer"},
+        )
