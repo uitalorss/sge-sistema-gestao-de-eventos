@@ -12,6 +12,8 @@ from models.user_model import User
 from schemas.user_schema import (
     CreateUserSchema,
     LoginUserSchema,
+    ProfileResponseSchema,
+    UserResponseSchema,
     UserUpdateSchema,
 )
 
@@ -98,20 +100,44 @@ async def login_user(user_data: LoginUserSchema, db: AsyncSession):
 
 
 async def get_user_data(user_id: UUID, db: AsyncSession, profile: PerfilEnum):
-    print(profile)
     async with db as session:
         result = await session.execute(
             select(User)
             .options(selectinload(User.perfil))
             .filter(User.id == user_id)
         )
-        user = result.scalars().unique().one_or_none()
 
-        if user is None:
+        user_db = result.scalars().unique().one_or_none()
+
+        if user_db is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Usuário não encontrado.",
             )
+
+        perfil_atual = next(
+            (
+                ProfileResponseSchema.model_validate(perfil)
+                for perfil in user_db.perfil
+                if perfil.tipo_perfil == profile
+            ),
+            None,
+        )
+        outros_perfis = [
+            ProfileResponseSchema.model_validate(perfil)
+            for perfil in user_db.perfil
+            if perfil.tipo_perfil != profile
+        ]
+
+        user = {
+            "nome": user_db.nome,
+            "email": user_db.email,
+            "telefone": user_db.telefone,
+            "perfil_atual": perfil_atual,
+            "outro_perfis": outros_perfis,
+            "eventos": user_db.eventos,
+            "eventos_inscritos": user_db.eventos_inscritos,
+        }
 
         return user
 

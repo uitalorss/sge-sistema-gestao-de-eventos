@@ -50,9 +50,7 @@ async def post_login_user(
     )
 
 
-@router.get(
-    "/", response_model=UserResponseSchema, status_code=status.HTTP_200_OK
-)
+@router.get("/", status_code=status.HTTP_200_OK)
 async def get_user(
     profile: PerfilEnum = Depends(get_current_profile),
     user: User = Depends(get_current_user_without_profile_check),

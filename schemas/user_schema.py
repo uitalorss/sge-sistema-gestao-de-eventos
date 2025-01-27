@@ -35,16 +35,6 @@ class UserInListSchema(BaseModel):
     nome: str
 
 
-class UserResponseSchema(BaseModel):
-    id: UUID
-    nome: str
-    email: EmailStr
-    telefone: str
-    criado_em: datetime
-    eventos: list[EventoListUserSchema]
-    eventos_inscritos: List[InscricaoListUserSchema]
-
-
 class UserUpdateSchema(BaseModel):
     nome: Optional[str] = None
     email: Optional[str] = None
@@ -54,3 +44,21 @@ class UserUpdateSchema(BaseModel):
     @field_validator("telefone")
     def validate_telefone(cls, v):
         return valida_telefone(v)
+
+
+class ProfileResponseSchema(BaseModel):
+    tipo_perfil: PerfilEnum
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class UserResponseSchema(BaseModel):
+    id: UUID
+    nome: str
+    email: EmailStr
+    telefone: str
+    criado_em: datetime
+    eventos: list[EventoListUserSchema]
+    eventos_inscritos: List[InscricaoListUserSchema]
