@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import HTTPException, Response, status
+from fastapi import HTTPException, status
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select

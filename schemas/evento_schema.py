@@ -1,11 +1,10 @@
 from datetime import datetime
 from typing import List, Optional
-from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
-from . import EventoBaseSchema, ParticipanteBaseSchema
-from .user_schema import UserInListSchema, UserSchema
+from . import EventoBaseSchema
+from .user_schema import UserInListSchema
 
 
 class EventoSchema(EventoBaseSchema):
