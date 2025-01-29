@@ -14,7 +14,6 @@ from schemas.user_schema import (
     CreateUserSchema,
     LoginUserSchema,
     ProfileResponseSchema,
-    UserResponseSchema,
     UserUpdateSchema,
 )
 

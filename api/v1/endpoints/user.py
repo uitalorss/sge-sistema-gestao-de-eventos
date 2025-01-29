@@ -15,7 +15,6 @@ from models.user_model import User
 from schemas.user_schema import (
     CreateUserSchema,
     LoginUserSchema,
-    UserResponseSchema,
     UserUpdateSchema,
 )
 from services.user_service import (

@@ -4,11 +4,10 @@ from uuid import UUID
 
 import redis
 from fastapi import HTTPException, Response, status
-from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm import joinedload
 
 from models.eventos_model import Evento
 from schemas.evento_schema import (
