@@ -21,6 +21,7 @@ class User(settings.DBBaseModel):
     )
     nome = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
+    cpf = Column(String(14), nullable=False)
     senha = Column(String, nullable=False)
     telefone = Column(String(11), nullable=True)
     criado_em = Column(

@@ -5,6 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr, field_validator
 
 from models.profile_model import PerfilEnum
+from utils.valida_cpf import valida_cpf
 from utils.valida_telefone import valida_telefone
 
 from . import EventoListUserSchema
@@ -14,8 +15,13 @@ from .inscricao_schema import InscricaoListUserSchema
 class UserSchema(BaseModel):
     nome: str
     email: EmailStr
+    cpf: str
     telefone: str
     perfil: List[PerfilEnum]
+
+    @field_validator("cpf")
+    def validate_cpf(cls, cpf):
+        return valida_cpf(cpf)
 
 
 class CreateUserSchema(UserSchema):

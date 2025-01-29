@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import HTTPException, Response, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload, selectinload
@@ -22,6 +23,7 @@ async def create_user(user: CreateUserSchema, db: AsyncSession):
     new_user: User = User(
         nome=user.nome,
         email=user.email,
+        cpf=user.cpf,
         senha=generate_hashed_password(user.senha),
         telefone=user.telefone,
     )
@@ -37,11 +39,17 @@ async def create_user(user: CreateUserSchema, db: AsyncSession):
 
             await session.commit()
 
-            return new_user
+            return {"message": "Usuário criado com sucesso."}
         except HTTPException:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Favor verificar dados.",
+            )
+
+        except IntegrityError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Dados informados são inválidos.",
             )
 
 
