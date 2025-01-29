@@ -36,17 +36,25 @@ A API de Lista de Tarefas é um projeto desenvolvido com o intuito de consolidar
 
 ## ✅ Requisitos funcionais
 
-- [x] É possível criar organizador.
-- [x] É possível criar participante.
-- [x] É possível se autenticar como organizador ou participante.
-- [x] É possível um organizador criar eventos.
-- [x] É possível um organizador editar um evento criado.
-- [x] É possível um organizador excluir um evento criado.
-- [x] É possível um organizador listar eventos criados.
-- [x] É possível um participante se inscrever em um evento.
-- [x] É possível um participante cancelar sua inscrição em um evento.
-- [x] É possível um participante listar os eventos inscritos.
-- [x] É possível listar todos os eventos.
+### Gestão de usuários 
+- [x] **Criar usuário:** O sistema deve permitir a criação de um novo usuário.
+- [x] **Atribuir perfis ao usuário:** O sistema deve permitir atribuir perfis (organizador ou participante).
+- [x] **Autenticação:**  O sistema deve permitir que o usuário se autentique como organizador ou participante.
+
+### Gestão de Eventos (Organizador):
+- [x] **Criar evento:**  O organizador deve poder criar novos eventos no sistema.
+- [x] **Editar evento:**  O organizador deve poder editar eventos criados.
+- [x] **Excluir evento:**  O organizador deve poder excluir eventos criados.
+- [x] **Listar eventos criados:**  O organizador deve poder listar todos os eventos que criou.
+
+### Inscrição e Participação (Participante):
+- [x] **Inscrever-se em evento:**  O participante deve poder se inscrever em um evento.
+- [x] **Cancelar inscrição:**  O participante deve poder cancelar sua inscrição em um evento.
+- [x] **Listar eventos inscritos:**  O participante deve poder listar todos os eventos em que está inscrito.
+
+### Visualização de Eventos:
+- [x] **Listar todos os eventos:**  O sistema deve permitir que qualquer pessoa (usuário ou não) acesse a lista de eventos.
+- [x] **Listar determinado evento:**  O sistema deve permitir que qualquer pessoa (usuário ou não) acesse os detalhes de determinado evento.
 
 ## 📫 Contribuindo para o projeto
 
