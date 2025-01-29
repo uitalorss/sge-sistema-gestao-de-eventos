@@ -1,19 +1,6 @@
 from datetime import datetime
-from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, field_validator
-
-from utils.valida_telefone import valida_telefone
-
-
-class ParticipanteBaseSchema(BaseModel):
-    nome: str
-    email: EmailStr
-    telefone: str
-
-    @field_validator("telefone")
-    def validate_telefone(cls, v):
-        return valida_telefone(v)
+from pydantic import BaseModel
 
 
 class EventoBaseSchema(BaseModel):
