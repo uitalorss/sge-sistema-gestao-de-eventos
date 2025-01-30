@@ -5,16 +5,17 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from models.eventos_model import Evento
 from models.inscricao_model import Inscricao
 from schemas.inscricao_schema import InscricaoBaseSchema
-from services.evento_service import get_evento
+from services.evento_service import pegar_evento
 
 
 async def create_inscricao(
     evento: InscricaoBaseSchema, user_id: UUID, db: AsyncSession
 ):
     async with db as session:
-        evento_exists = await get_evento(evento_id=evento.evento_id, db=db)
+        evento_exists = await pegar_evento(evento_id=evento.evento_id, db=db)
 
         if len(evento_exists.participantes) == evento_exists.capacidade:
             raise HTTPException(
@@ -44,6 +45,22 @@ async def create_inscricao(
         await session.commit()
 
         return nova_inscricao
+
+
+async def get_participantes_evento(evento_id: int, db: AsyncSession):
+    async with db as session:
+        result = await session.execute(
+            select(Evento).filter(Evento.id == evento_id)
+        )
+        evento = result.scalars().first()
+
+        if evento is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Evento não encontrado.",
+            )
+
+        return evento
 
 
 async def delete_inscricao(evento_id: int, user_id: UUID, db: AsyncSession):

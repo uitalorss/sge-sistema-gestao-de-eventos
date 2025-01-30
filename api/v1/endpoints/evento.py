@@ -1,7 +1,4 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, Security, status
-from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.auth.deps import get_current_user, get_session
@@ -9,7 +6,6 @@ from models.profile_model import PerfilEnum
 from schemas.evento_schema import (
     EventoBaseSchema,
     EventoResponseSchema,
-    EventoResponseSchemaCompleto,
     EventoUpdateSchema,
 )
 from services.evento_service import (
@@ -49,7 +45,6 @@ async def get_eventos(db: AsyncSession = Depends(get_session)):
 
 @router.get(
     "/{evento_id}",
-    response_model=EventoResponseSchemaCompleto,
     status_code=status.HTTP_200_OK,
     responses={**generate_not_found_response("Evento")},
 )
