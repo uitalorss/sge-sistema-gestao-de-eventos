@@ -1,10 +1,9 @@
 import uuid
-from datetime import datetime
 
-from pytz import timezone
-from sqlalchemy import Column, DateTime, String
+from sqlalchemy import TIMESTAMP, Column, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from core.configs import settings
 
@@ -21,11 +20,11 @@ class User(settings.DBBaseModel):
     )
     nome = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
-    cpf = Column(String(14), nullable=False)
+    cpf = Column(String(14), nullable=False, unique=True)
     senha = Column(String, nullable=False)
     telefone = Column(String(11), nullable=True)
     criado_em = Column(
-        DateTime, default=datetime.now(timezone("America/Bahia"))
+        TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
     )
     perfil = relationship(
         "Profile", back_populates="usuario", cascade="all, delete-orphan"

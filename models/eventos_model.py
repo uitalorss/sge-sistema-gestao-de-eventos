@@ -1,9 +1,7 @@
-from datetime import datetime
-
-from pytz import timezone
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import TIMESTAMP, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from core.configs import settings
 
@@ -20,12 +18,10 @@ class Evento(settings.DBBaseModel):
         UUID(as_uuid=True), ForeignKey("usuarios.id"), nullable=False
     )
     criado_em = Column(
-        DateTime, default=datetime.now(timezone("America/Bahia"))
+        TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
     )
     atualizado_em = Column(
-        DateTime,
-        default=datetime.now(timezone("America/Bahia")),
-        onupdate=datetime.now(timezone("America/Bahia")),
+        TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
     )
     usuario = relationship("User", back_populates="eventos", lazy="joined")
     participantes = relationship(

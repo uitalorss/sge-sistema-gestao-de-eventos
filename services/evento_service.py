@@ -39,7 +39,8 @@ async def create_evento(
                 redis_db.delete("eventos")
 
             return novo_evento
-        except IntegrityError:
+        except IntegrityError as e:
+            print(e)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Favor verificar dados.",

@@ -1,8 +1,6 @@
-from datetime import datetime
-
-from pytz import timezone
-from sqlalchemy import Column, DateTime, ForeignKey, Integer
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql import func
 
 from core.configs import settings
 
@@ -19,5 +17,5 @@ class Inscricao(settings.DBBaseModel):
         primary_key=True,
     )
     criado_em = Column(
-        DateTime, default=datetime.now(timezone("America/Bahia"))
+        TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
     )
