@@ -47,10 +47,14 @@ async def create_inscricao(
         return nova_inscricao
 
 
-async def get_participantes_evento(evento_id: int, db: AsyncSession):
+async def get_participantes_evento(
+    evento_id: int, db: AsyncSession, user_id: UUID
+):
     async with db as session:
         result = await session.execute(
-            select(Evento).filter(Evento.id == evento_id)
+            select(Evento).filter(
+                and_(Evento.id == evento_id, Evento.user_id == user_id)
+            )
         )
         evento = result.scalars().first()
 

@@ -47,11 +47,13 @@ async def post_inscricao(
 async def pegar_participantes_inscritos(
     evento_id: int,
     db: AsyncSession = Depends(get_session),
-    _user: User = Security(
+    user: User = Security(
         get_current_user, scopes=[PerfilEnum.ORGANIZADOR.value]
     ),
 ):
-    return await get_participantes_evento(evento_id=evento_id, db=db)
+    return await get_participantes_evento(
+        evento_id=evento_id, db=db, user_id=user.id
+    )
 
 
 @router.delete(
