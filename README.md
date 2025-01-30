@@ -9,7 +9,7 @@
 
 ### 💡 Um pouco sobre o projeto.
 
-A API de Lista de Tarefas é um projeto desenvolvido com o intuito de consolidar conhecimento no desenvolvimento back-end utilizando Python e o framework FastAPI através de uma API que permite gerenciar eventos. Ela permite que organizadores criem, organizem e acompanhem seus eventos e participantes se inscrevam nos eventos criados.
+A API de gestão de eventos é um projeto desenvolvido com o intuito de consolidar conhecimento no desenvolvimento back-end utilizando Python e o framework FastAPI através de uma API que permite gerenciar usuários que querem divulgar eventos e promover inscrições. Ela permite que organizadores criem, organizem e acompanhem seus eventos e participantes se inscrevam nos eventos criados.
 
 ## 💻 Tecnologias utilizadas
 

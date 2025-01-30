@@ -15,7 +15,6 @@ from schemas.evento_schema import (
     EventoResponseSchema,
     EventoUpdateSchema,
 )
-from schemas.user_schema import UserSchema
 
 redis_db = redis.Redis(host="localhost", port=6379, db=0)
 
@@ -76,13 +75,19 @@ async def get_todos_eventos(db: AsyncSession):
 async def get_evento(evento_id: int, db: AsyncSession):
     async with db as session:
         evento = await pegar_evento(evento_id, db=session)
-        if evento is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Evento não encontrado.",
-            )
 
-        return evento
+        response_evento = {
+            "id": evento.id,
+            "nome": evento.nome,
+            "descricao": evento.descricao,
+            "data_inicio": str(evento.data_inicio),
+            "capacidade": evento.capacidade,
+            "organizador": evento.usuario.nome,
+            "criado_em": str(evento.criado_em),
+            "atualizado_em": str(evento.atualizado_em),
+        }
+
+        return response_evento
 
 
 async def update_evento(
@@ -128,24 +133,13 @@ async def delete_evento(evento_id: int, db: AsyncSession, user_id: UUID):
 
 
 async def pegar_evento(evento_id: int, db: AsyncSession):
-    query = (
-        select(Evento)
-        .options(joinedload(Evento.usuario))
-        .filter(Evento.id == evento_id)
-    )
-    result = await db.execute(query)
+    result = await db.execute(select(Evento).filter(Evento.id == evento_id))
     evento = result.scalars().unique().one_or_none()
 
-    response_evento = {
-        "id": evento.id,
-        "nome": evento.nome,
-        "descricao": evento.descricao,
-        "data_inicio": str(evento.data_inicio),
-        "capacidade": evento.capacidade,
-        "organizador": evento.usuario.nome,
-        "criado_em": str(evento.criado_em),
-        "atualizado_em": str(evento.atualizado_em),
-        "participantes": evento.participantes,
-    }
+    if evento is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Evento não encontrado.",
+        )
 
-    return response_evento
+    return evento
