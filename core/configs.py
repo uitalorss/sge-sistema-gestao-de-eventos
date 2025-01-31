@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     else:
         raise ValueError("Tipo de ambiente informado é inválido.")
 
+    print(DB_URL)
     DBBaseModel: ClassVar[DeclarativeMeta] = declarative_base()
 
     JWT_KEY: str = os.getenv("JWT_KEY")
