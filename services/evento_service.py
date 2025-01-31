@@ -16,7 +16,7 @@ from schemas.evento_schema import (
     EventoUpdateSchema,
 )
 
-redis_db = redis.Redis(host="localhost", port=6379, db=0)
+redis_db = redis.Redis(host="redis", port=6379, db=0)
 
 
 async def create_evento(
