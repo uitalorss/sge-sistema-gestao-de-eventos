@@ -20,6 +20,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=sge-db
+    volumes:
+      - dbdata:/var/lib/postgresql/data
     networks:
       - sge-network
   
@@ -32,9 +34,15 @@ services:
       - ALLOW_EMPTY_PASSWORD=true
     depends_on:
       - backend
+    volumes:
+      - dbcache:/bitnami/redis/data
     networks:
       - sge-network
 
 networks:
   sge-network:
     driver: bridge
+
+volumes:
+  dbdata:
+  dbcache:
