@@ -20,18 +20,22 @@ A API de gestão de eventos é um projeto desenvolvido com o intuito de consolid
     - Alembic
     - JWT
     - Redis
+    - Docker
 
 ## 🚀 Instalando o projeto
 - Faça o clone do projeto através do comando `git clone https://github.com/uitalorss/todo-list_fast_api.git`
 - Configure as variáveis de ambiente do backend em um arquivo `.env`.
   - Na pasta já há um arquivo .env.example.
-  - Instale as dependências através do comando `pip install -r requirements.txt`
+  - Instale as dependências através do comando `pip install -r requirements.txt`.
   - Exeute `alembic upgrade head` para as migrações do banco de dados.
+  - Caso utilize o Docker, configure as variáveis de ambientte e execute `docker compose up`.
     
 ## ☕ Usando o projeto
 - Acesse a pasta do projeto.
 - Digite o comando `fastapi dev main.py`.
+    - Não é necessário executar esse comando caso tenha utilizado o comando do docker e o ambiente tenha subido corretamente.  
 - Para acessar a documentação dos endpoints da APi digite o comando `http://localhost:8000/docs` ou `http://localhost:8000/redoc`.
+
 
 
 ## ✅ Requisitos funcionais
